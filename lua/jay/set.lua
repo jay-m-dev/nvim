@@ -1,6 +1,6 @@
 vim.opt.nu = true
 vim.opt.relativenumber = true
-vim.cmd 'colorscheme lunaperche'
+-- vim.cmd 'colorscheme lunaperche'
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
