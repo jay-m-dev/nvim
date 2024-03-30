@@ -40,4 +40,9 @@ return require('packer').startup(function(use)
           require('Comment').setup()
       end
   }
+  use { 'maxmx03/solarized.nvim' }
+  use {
+      'nvim-lualine/lualine.nvim',
+      requires = { 'nvim-tree/nvim-web-devicons', opt = true }
+  }
 end)
