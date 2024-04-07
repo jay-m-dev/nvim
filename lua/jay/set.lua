@@ -1,5 +1,6 @@
 vim.opt.nu = true
 vim.opt.relativenumber = true
+vim.opt.background = "light"
 vim.cmd 'colorscheme solarized'
 
 vim.opt.tabstop = 4
