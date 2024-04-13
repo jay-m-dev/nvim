@@ -1,7 +1,7 @@
 vim.opt.nu = true
 vim.opt.relativenumber = true
 vim.opt.background = "light"
-vim.cmd 'colorscheme solarized'
+vim.cmd 'colorscheme default'
 
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
