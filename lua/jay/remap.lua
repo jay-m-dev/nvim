@@ -55,7 +55,7 @@ vim.keymap.set('n', '<leader>w', ':w<CR>')
 vim.keymap.set('i', 'jk', '<ESC>')
 vim.keymap.set('n', '<leader>s', ":sp<CR>")
 vim.keymap.set('n', '<leader>v', ':vs<CR>')
-vim.keymap.set('n', '<leader>t', ':term<CR>')
+vim.keymap.set('n', '<leader>t', ':sp<CR>:term<CR>i')
 
 vim.keymap.set('n', '<leader>dc', function() require('dap').continue() end)
 vim.keymap.set('n', '<leader>do', function() require('dap').step_over() end)
