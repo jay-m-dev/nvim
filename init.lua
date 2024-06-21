@@ -24,6 +24,7 @@ vim.o.expandtab = true      -- Use spaces instead of tabs
 vim.o.shiftwidth = 4        -- Number of spaces for indentation
 vim.o.tabstop = 4           -- Number of spaces per tab
 vim.o.softtabstop = 4       -- Number of spaces per tab in insert mode
+vim.o.ignorecase = true
 
 -- Initialize packer
 require('packer').startup(function(use)
