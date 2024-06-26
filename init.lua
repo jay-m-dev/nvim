@@ -26,6 +26,28 @@ vim.o.shiftwidth = 4        -- Number of spaces for indentation
 vim.o.tabstop = 4           -- Number of spaces per tab
 vim.o.softtabstop = 4       -- Number of spaces per tab in insert mode
 vim.o.ignorecase = true     -- Ignore case when searching
+vim.o.clipboard = "unnamedplus"
+
+-- Function to set options for specific file types
+local function set_tab_width(filetype, shiftwidth, tabstop, softtabstop)
+    vim.api.nvim_create_autocmd("FileType", {
+        pattern = filetype,
+        callback = function()
+            vim.bo.shiftwidth = shiftwidth
+            vim.bo.tabstop = tabstop
+            vim.bo.softtabstop = softtabstop
+        end
+    })
+end
+
+-- Set tab width for JavaScript and ReactJS files
+set_tab_width("javascript", 2, 2, 2)
+set_tab_width("javascriptreact", 2, 2, 2)
+set_tab_width("typescript", 2, 2, 2)
+set_tab_width("typescriptreact", 2, 2, 2)
+
+-- Set tab width for JavaScript and ReactJS files
+set_tab_width("python", 4, 4, 4)
 
 -- Key mappings for navigating and displaying diagnostics
 vim.api.nvim_set_keymap('n', '<Leader>cd', '<cmd>Lspsaga show_line_diagnostics<CR>', { noremap = true, silent = true })
@@ -60,7 +82,12 @@ require('packer').startup(function(use)
     end
   }
 
-  -- Add other plugins here
+  use {
+    'iamcco/markdown-preview.nvim',
+    run = 'cd app && npm install',
+    setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
+    ft = { "markdown" },
+  }
 end)
 
 -- nvim-cmp setup
@@ -118,4 +145,7 @@ require('telescope').setup{
 }
 
 vim.api.nvim_set_keymap('n', '<Leader>dd', '<cmd>Telescope diagnostics<CR>', { noremap = true, silent = true })
+-- Key mappings for Markdown preview
+vim.api.nvim_set_keymap('n', '<Leader>mp', ':MarkdownPreview<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>ms', ':MarkdownPreviewStop<CR>', { noremap = true, silent = true })
 
