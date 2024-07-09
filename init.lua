@@ -89,6 +89,12 @@ require('packer').startup(function(use)
     setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
     ft = { "markdown" },
   }
+
+  use {
+    'nvim-treesitter/nvim-treesitter',
+    run = ':TSUpdate'
+  }
+
 end)
 
 -- nvim-cmp setup
@@ -150,3 +156,5 @@ vim.api.nvim_set_keymap('n', '<Leader>dd', '<cmd>Telescope diagnostics<CR>', { n
 vim.api.nvim_set_keymap('n', '<Leader>mp', ':MarkdownPreview<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<Leader>ms', ':MarkdownPreviewStop<CR>', { noremap = true, silent = true })
 
+-- Disable the Perl provider
+vim.g.loaded_perl_provider = 0
