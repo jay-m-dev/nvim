@@ -28,6 +28,10 @@ vim.o.tabstop = 4           -- Number of spaces per tab
 vim.o.softtabstop = 4       -- Number of spaces per tab in insert mode
 vim.o.ignorecase = true     -- Ignore case when searching
 vim.o.clipboard = "unnamedplus"
+vim.o.cursorline = true
+vim.o.colorcolumn = "80"
+vim.cmd([[highlight ColorColumn ctermbg=0 guibg=lightgrey]])
+vim.cmd([[highlight CursorLine cterm=NONE ctermbg=0 guibg=lightgrey]])
 
 -- Function to set options for specific file types
 local function set_tab_width(filetype, shiftwidth, tabstop, softtabstop)
@@ -83,11 +87,23 @@ require('packer').startup(function(use)
     end
   }
 
+  -- use {
+  --   'iamcco/markdown-preview.nvim',
+  --   run = 'cd app && npm install',
+  --   setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
+  --   ft = { "markdown" },
+  -- }
+
   use {
-    'iamcco/markdown-preview.nvim',
-    run = 'cd app && npm install',
-    setup = function() vim.g.mkdp_filetypes = { "markdown" } end,
-    ft = { "markdown" },
+      'iamcco/markdown-preview.nvim',
+      run = function() vim.fn["mkdp#util#install"]() end,
+      setup = function()
+          vim.g.mkdp_filetypes = { "markdown" }
+          vim.g.mkdp_auto_start = 0
+          vim.g.mkdp_auto_close = 1
+          vim.g.mkdp_browser = ''  -- Leave empty for default browser or specify your preferred browser
+      end,
+      ft = { "markdown" },
   }
 
   use {
@@ -158,3 +174,13 @@ vim.api.nvim_set_keymap('n', '<Leader>ms', ':MarkdownPreviewStop<CR>', { noremap
 
 -- Disable the Perl provider
 vim.g.loaded_perl_provider = 0
+
+-- Custom colors for nvimdiff with Solarized Dark theme
+vim.cmd [[
+  highlight DiffAdd    ctermbg=22 guibg=#073642
+  highlight DiffChange ctermbg=24 guibg=#002b36
+  highlight DiffDelete ctermbg=52 guibg=#073642
+  highlight DiffText   ctermbg=94 guibg=#586e75
+]]
+
+vim.g.mkdp_browser = 'firefox'
