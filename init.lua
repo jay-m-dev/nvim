@@ -30,8 +30,8 @@ vim.o.ignorecase = true     -- Ignore case when searching
 vim.o.clipboard = "unnamedplus"
 vim.o.cursorline = true
 vim.o.colorcolumn = "80"
-vim.cmd([[highlight ColorColumn ctermbg=0 guibg=lightgrey]])
-vim.cmd([[highlight CursorLine cterm=NONE ctermbg=0 guibg=lightgrey]])
+vim.cmd([[highlight ColorColumn ctermbg=234 guibg=#2e3436]])
+vim.cmd([[highlight CursorLine cterm=NONE ctermbg=236 guibg=#444444]])
 
 -- Function to set options for specific file types
 local function set_tab_width(filetype, shiftwidth, tabstop, softtabstop)
@@ -176,11 +176,25 @@ vim.api.nvim_set_keymap('n', '<Leader>ms', ':MarkdownPreviewStop<CR>', { noremap
 vim.g.loaded_perl_provider = 0
 
 -- Custom colors for nvimdiff with Solarized Dark theme
+-- vim.cmd [[
+--   highlight DiffAdd    ctermbg=22 guibg=#073642
+--   highlight DiffChange ctermbg=24 guibg=#002b36
+--   highlight DiffDelete ctermbg=52 guibg=#073642
+--   highlight DiffText   ctermbg=94 guibg=#586e75
+-- ]]
+-- Colors for nvimdiff with Tango Dark
 vim.cmd [[
-  highlight DiffAdd    ctermbg=22 guibg=#073642
-  highlight DiffChange ctermbg=24 guibg=#002b36
-  highlight DiffDelete ctermbg=52 guibg=#073642
-  highlight DiffText   ctermbg=94 guibg=#586e75
+  highlight DiffAdd    ctermbg=28 guibg=#346604
+  highlight DiffChange ctermbg=39 guibg=#204a87
+  highlight DiffDelete ctermbg=52 guibg=#a40000
+  highlight DiffText   ctermbg=58 guibg=#5c3566
 ]]
 
+
 vim.g.mkdp_browser = 'firefox'
+
+-- Key mappings for Telescope file finder
+vim.api.nvim_set_keymap('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>fg', '<cmd>Telescope live_grep<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>fb', '<cmd>Telescope buffers<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<Leader>fh', '<cmd>Telescope help_tags<CR>', { noremap = true, silent = true })
