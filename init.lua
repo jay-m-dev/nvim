@@ -18,6 +18,8 @@ vim.api.nvim_set_keymap('n', '<leader>v', ':vs<CR>', { noremap = true, silent = 
 vim.api.nvim_set_keymap('n', '<leader>s', ':sp<CR>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('i', 'jk', '<ESC>', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<leader>r', ':!python3 %<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>ts', ':sp<CR>:term<CR>A', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>tv', ':vs<CR>:term<CR>A', { noremap = true, silent = true })
 
 -- Set options
 vim.o.number = true         -- Show line numbers
