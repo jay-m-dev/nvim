@@ -83,7 +83,7 @@ require("lazy").setup({
     },
     keys = {
       { "<leader>cc", function() require("CopilotChat").toggle() end, desc = "Toggle Copilot Chat" },
-      { "<leader>cq", function() require("CopilotChat").ask("Explain this code") end, desc = "Explain Code" },
+      { "<leader>ce", function() require("CopilotChat").ask("Explain this code") end, desc = "Explain Code" },
     },
   }
 })
@@ -234,4 +234,6 @@ wk.register({
     mt = "Markview toggle",
   }
 })
+
+vim.keymap.set('t', 'jk', '<C-\\><C-n>', { noremap = true })
 
