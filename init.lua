@@ -26,6 +26,13 @@ require("lazy").setup({
     end,
   },
   {
+    "echasnovski/mini.icons",
+    version = false,
+    config = function()
+      require("mini.icons").setup()
+    end,
+  },
+  {
     "glepnir/lspsaga.nvim",
     event = "LspAttach",
     config = function() require("lspsaga").setup({}) end,
@@ -40,12 +47,6 @@ require("lazy").setup({
     config = function() require("Comment").setup() end
   },
   {
-    "nvim-treesitter/nvim-treesitter",
-    lazy = true,
-    event = { "BufRead", "BufNewFile" },
-    build = ":TSUpdate"
-  },
-  {
     "OXY2DEV/markview.nvim",
     lazy = true,
     dependencies = { "nvim-treesitter/nvim-treesitter" },
@@ -53,6 +54,18 @@ require("lazy").setup({
     config = function()
       require("markview").setup({ markdown = { enable = true } })
       vim.keymap.set("n", "<leader>mt", "<cmd>Markview toggle<CR>")
+    end,
+  },
+  {
+    "nvim-treesitter/nvim-treesitter",
+    build = ":TSUpdate",
+    config = function()
+      require("nvim-treesitter.configs").setup {
+        ensure_installed = {
+          "lua", "python", "typescript", "tsx", "json", "markdown"
+        },
+        highlight = { enable = true },
+      }
     end,
   },
   {
@@ -73,10 +86,10 @@ require("lazy").setup({
   },
   {
     "CopilotC-Nvim/CopilotChat.nvim",
-    branch = "canary", -- use 'main' if you want stable
+    branch = "canary",
     dependencies = {
-      { "zbirenbaum/copilot.lua" }, -- required
-      { "nvim-lua/plenary.nvim" },  -- required
+      { "zbirenbaum/copilot.lua" },
+      { "nvim-lua/plenary.nvim" },
     },
     opts = {
       show_help = "yes",
@@ -85,8 +98,61 @@ require("lazy").setup({
       { "<leader>cc", function() require("CopilotChat").toggle() end, desc = "Toggle Copilot Chat" },
       { "<leader>ce", function() require("CopilotChat").ask("Explain this code") end, desc = "Explain Code" },
     },
-  }
+  },
+  {
+    "pwntester/octo.nvim",
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+      "nvim-telescope/telescope.nvim",
+      "nvim-tree/nvim-web-devicons",
+    },
+    config = function()
+      require"octo".setup()
+    end,
+    cmd = "Octo",
+  },
+  {
+    "lewis6991/gitsigns.nvim",
+    config = function()
+      require("gitsigns").setup()
+    end,
+  },
+  {
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
+    config = function()
+      require("lualine").setup()
+    end,
+  },
 })
+
+-- WSL Clipboard Fix
+if vim.fn.has("wsl") == 1 then
+  vim.g.clipboard = {
+    name = "win32yank-wsl",
+    copy = {
+      ["+"] = "win32yank.exe -i --crlf",
+      ["*"] = "win32yank.exe -i --crlf",
+    },
+    paste = {
+      ["+"] = "win32yank.exe -o --lf",
+      ["*"] = "win32yank.exe -o --lf",
+    },
+    cache_enabled = 0,
+  }
+end
+
+
+-- Paste from system clipboard with \r stripped
+vim.keymap.set("n", "<leader>p", function()
+  local ok, text = pcall(vim.fn.getreg, "+")
+  if ok and type(text) == "string" then
+    vim.fn.setreg("+", text:gsub("\r", ""))
+    vim.cmd('normal! "+p')
+  else
+    vim.notify("Clipboard read failed", vim.log.levels.WARN)
+  end
+end, { desc = "Paste + register with \\r stripped" })
 
 -- Editor Options
 vim.o.number = true
@@ -129,7 +195,7 @@ local opts = { noremap = true, silent = true }
 
 map('n', '<leader>w', ':w<CR>', opts)
 map('n', '<leader>q', ':q<CR>', opts)
-map('n', '<leader><S-Q>', ':qa<CR>', opts)
+map('n', '<leader>Q', ':qa<CR>', opts)
 map('n', '<leader>h', '<C-w>h', opts)
 map('n', '<leader>j', '<C-w>j', opts)
 map('n', '<leader>k', '<C-w>k', opts)
@@ -190,6 +256,8 @@ cmp.setup({
   }
 })
 
+
+
 -- lspconfig
 local lspconfig = require('lspconfig')
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
@@ -206,34 +274,36 @@ vim.cmd [[
   highlight DiffText   ctermbg=58 guibg=#5c3566
 ]]
 
-local wk = require("which-key")
-
-wk.register({
+-- Which-Key descriptions
+require("which-key").register({
   ["<leader>"] = {
-    w = "Save file",
-    q = "Quit",
-    ["<S-Q>"] = "Quit all",
+    Q = "Quit all",
+    cc = "Copilot Chat toggle",
+    ce = "Copilot Chat explain code",
+    dd = "Diagnostics",
+    fb = "Buffers",
+    ff = "Find files",
+    fg = "Live grep",
+    fh = "Help tags",
     h = "Window left",
     j = "Window down",
     k = "Window up",
     l = "Window right",
-    v = "Vertical split",
-    s = "Horizontal split",
-    r = "Run python file",
-    ts = "Terminal horizontal split",
-    tv = "Terminal vertical split",
     mp = "Markdown preview start",
     ms = "Markdown preview stop",
-    ff = "Find files",
-    fg = "Live grep",
-    fb = "Buffers",
-    fh = "Help tags",
-    dd = "Diagnostics",
-    cc = "Copilot Chat toggle",
-    cq = "Copilot Chat explain code",
     mt = "Markview toggle",
+    q = "Quit",
+    r = "Run python file",
+    s = "Horizontal split",
+    ts = "Terminal horizontal split",
+    tv = "Terminal vertical split",
+    v = "Vertical split",
+    w = "Save file",
+    p = "Paste from + (strip \\r)",
   }
 })
 
 vim.keymap.set('t', 'jk', '<C-\\><C-n>', { noremap = true })
+
+vim.g.python3_host_prog = vim.fn.expand("~/.venvs/nvim/bin/python")
 
