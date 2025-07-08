@@ -106,11 +106,7 @@ require("lazy").setup({
     },
     opts = {
       show_help = "yes",
-      model = "claude-sonnet-4"
-    },
-    keys = {
-      { "<leader>cc", function() require("CopilotChat").toggle() end, desc = "Toggle Copilot Chat" },
-      { "<leader>ce", function() require("CopilotChat").ask("Explain this code") end, desc = "Explain Code" },
+      -- model = "claude-sonnet-4"
     },
   },
   {
@@ -217,7 +213,10 @@ map('n', '<leader>l', '<C-w>l', opts)
 map('n', '<leader>v', ':vs<CR>', opts)
 map('n', '<leader>s', ':sp<CR>', opts)
 map('i', 'jk', '<ESC>', opts)
-map('n', '<leader>r', ':!python3 %<CR>', opts)
+vim.keymap.set("n", "<leader>r", function()
+  vim.cmd("%delete _")        -- delete all lines, avoid polluting registers
+  vim.cmd("normal! ggP")   -- paste from + (system clipboard) at top
+end, { desc = "Replace file with + register" })
 map('n', '<leader>ts', ':sp<CR>:term<CR>A', opts)
 map('n', '<leader>tv', ':vs<CR>:term<CR>A', opts)
 
@@ -234,7 +233,10 @@ map('n', '<Leader>fg', '<cmd>Telescope live_grep<CR>', opts)
 map('n', '<Leader>fb', '<cmd>Telescope buffers<CR>', opts)
 map('n', '<Leader>fh', '<cmd>Telescope help_tags<CR>', opts)
 map('n', '<Leader>dd', '<cmd>Telescope diagnostics<CR>', opts)
-map('n', '<Leader>gw', ':GptWrap ', opts)
+
+vim.keymap.set('n', '<Leader>gw', function()
+  vim.fn.feedkeys(':GptWrap ', 'n')
+end, { desc = 'Prompt :GptWrap' })
 
 -- Diagnostic float on hover
 vim.cmd [[
@@ -339,3 +341,8 @@ end, {
   complete = "file",
   desc = "Wrap file(s) in triple backticks and open ChatGPT"
 })
+
+vim.keymap.set("n", "<leader>cc", ":CopilotChatToggle<CR>", { desc = "Toggle Copilot Chat" })
+vim.keymap.set("v", "<leader>ce", ":CopilotChatExplain<CR>", { desc = "Explain selection" })
+vim.keymap.set("v", "<leader>cf", ":CopilotChatFix<CR>", { desc = "Fix selection" })
+vim.keymap.set("v", "<leader>ct", ":CopilotChatTests<CR>", { desc = "Generate tests" })
