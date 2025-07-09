@@ -346,3 +346,8 @@ vim.keymap.set("n", "<leader>cc", ":CopilotChatToggle<CR>", { desc = "Toggle Cop
 vim.keymap.set("v", "<leader>ce", ":CopilotChatExplain<CR>", { desc = "Explain selection" })
 vim.keymap.set("v", "<leader>cf", ":CopilotChatFix<CR>", { desc = "Fix selection" })
 vim.keymap.set("v", "<leader>ct", ":CopilotChatTests<CR>", { desc = "Generate tests" })
+
+vim.keymap.set("n", "<leader>e", ":Vex<CR>", { desc = "Vertical Explorer" })
+vim.keymap.set('n', '<CR>', 'o<Esc>k', { noremap = true, silent = true })     -- line below
+vim.keymap.set('n', '<leader><CR>', 'O<Esc>j', { noremap = true, silent = true })   -- line above
+
