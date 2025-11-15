@@ -1,84 +1,81 @@
--- Set leader key early
-vim.g.mapleader = ' '
 
--- Load lazy.nvim if not installed
+-- File: /home/moranj3/.config/nvim/init.lua
+
+-- Leader and colors
+vim.g.mapleader = ' '
+vim.o.termguicolors = true
+
+-- lazy.nvim bootstrap
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
-    "git", "clone", "--filter=blob:none",
+    "git","clone","--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     lazypath
   })
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Plugin setup
+-- Plugins
 require("lazy").setup({
-  "neovim/nvim-lspconfig",
+  -- Completion
   "hrsh7th/nvim-cmp",
   "hrsh7th/cmp-nvim-lsp",
   "hrsh7th/vim-vsnip",
   "hrsh7th/cmp-vsnip",
+
+  -- Theme
+  {
+    "catppuccin/nvim",
+    name = "catppuccin",
+    priority = 1000,
+    config = function()
+      require("catppuccin").setup({
+        flavour = "mocha",
+        transparent_background = false,
+        integrations = {
+          cmp = true, gitsigns = true, treesitter = true,
+          telescope = true, which_key = true, markdown = true,
+          indent_blankline = true,
+        },
+      })
+      vim.cmd.colorscheme("catppuccin")
+    end,
+  },
+
+  -- Git / UI / Utils
   {
     "kdheepak/lazygit.nvim",
     cmd = "LazyGit",
     dependencies = { "nvim-lua/plenary.nvim" },
-    keys = {
-      { "<leader>gg", "<cmd>LazyGit<CR>", desc = "Open LazyGit" },
-    },
+    keys = { { "<leader>gg", "<cmd>LazyGit<CR>" } },
   },
-  {
-    "folke/which-key.nvim",
-    config = function()
-      require("which-key").setup {}
-    end,
-  },
-  {
-    "echasnovski/mini.icons",
-    version = false,
-    config = function()
-      require("mini.icons").setup()
-    end,
-  },
-  {
-    "nvim-tree/nvim-web-devicons",
-    lazy = true,
-    opts = {},
-  },
+  { "folke/which-key.nvim",
+    config = function() require("which-key").setup({}) end },
+  { "echasnovski/mini.icons", version = false,
+    config = function() require("mini.icons").setup() end },
+  { "nvim-tree/nvim-web-devicons", lazy = true, opts = {} },
   {
     "glepnir/lspsaga.nvim",
     event = "LspAttach",
     config = function() require("lspsaga").setup({}) end,
     dependencies = { "nvim-tree/nvim-web-devicons" },
   },
-  {
-    "nvim-telescope/telescope.nvim",
-    dependencies = { "nvim-lua/plenary.nvim" }
-  },
-  {
-    "numToStr/Comment.nvim",
+  { "nvim-telescope/telescope.nvim",
+    dependencies = { "nvim-lua/plenary.nvim" } },
+  { "numToStr/Comment.nvim",
     config = function() require("Comment").setup() end
-  },
-  {
-    "OXY2DEV/markview.nvim",
-    lazy = true,
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-    ft = { "markdown" },
-    config = function()
-      require("markview").setup({ markdown = { enable = true } })
-      vim.keymap.set("n", "<leader>mt", "<cmd>Markview toggle<CR>")
-    end,
   },
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
-      require("nvim-treesitter.configs").setup {
+      require("nvim-treesitter.configs").setup({
         ensure_installed = {
-          "lua", "python", "typescript", "tsx", "json", "markdown"
+          "lua","python","typescript","tsx","json","markdown"
         },
         highlight = { enable = true },
-      }
+      })
     end,
   },
   {
@@ -90,9 +87,7 @@ require("lazy").setup({
         suggestion = { enabled = true },
         panel = { enabled = false },
         filetypes = {
-          markdown = true,
-          help = true,
-          gitcommit = true,
+          markdown = true, help = true, gitcommit = true,
         },
       })
     end,
@@ -101,42 +96,85 @@ require("lazy").setup({
     "CopilotC-Nvim/CopilotChat.nvim",
     branch = "main",
     dependencies = {
-      { "zbirenbaum/copilot.lua" },
-      { "nvim-lua/plenary.nvim" },
+      { "zbirenbaum/copilot.lua" }, { "nvim-lua/plenary.nvim" },
     },
-    opts = {
-      show_help = "yes",
-      -- model = "claude-sonnet-4"
-    },
+    opts = { show_help = "yes" },
   },
   {
     "pwntester/octo.nvim",
     dependencies = {
-      "nvim-lua/plenary.nvim",
-      "nvim-telescope/telescope.nvim",
+      "nvim-lua/plenary.nvim","nvim-telescope/telescope.nvim",
       "nvim-tree/nvim-web-devicons",
     },
-    config = function()
-      require"octo".setup()
-    end,
+    config = function() require("octo").setup() end,
     cmd = "Octo",
   },
-  {
-    "lewis6991/gitsigns.nvim",
-    config = function()
-      require("gitsigns").setup()
-    end,
-  },
+  { "lewis6991/gitsigns.nvim",
+    config = function() require("gitsigns").setup() end },
   {
     "nvim-lualine/lualine.nvim",
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      require("lualine").setup()
+      require("lualine").setup({ options = { theme = "catppuccin" } })
     end,
+  },
+  {
+    "norcalli/nvim-colorizer.lua",
+    config = function()
+      require("colorizer").setup({
+        "*", css = { rgb_fn = true }, html = { names = true }
+      })
+    end,
+  },
+
+  -- LSP (0.11 API usage + installers)
+  "neovim/nvim-lspconfig",
+  "williamboman/mason.nvim",
+  {
+    "williamboman/mason-lspconfig.nvim",
+    dependencies = { "williamboman/mason.nvim" },
+    config = function()
+      require("mason").setup()
+      require("mason-lspconfig").setup({
+        ensure_installed = { "pyright","ts_ls","html","cssls","jsonls" },
+        automatic_installation = true,
+      })
+    end,
+  },
+
+  -- DAP core + UI + deps
+  "mfussenegger/nvim-dap",
+  { "nvim-neotest/nvim-nio" },
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "mfussenegger/nvim-dap","nvim-neotest/nvim-nio" },
+  },
+  { "theHamsta/nvim-dap-virtual-text",
+    dependencies = { "mfussenegger/nvim-dap" } },
+
+  -- DAP adapters via mason
+  {
+    "jay-babu/mason-nvim-dap.nvim",
+    dependencies = { "williamboman/mason.nvim","mfussenegger/nvim-dap" },
+    config = function()
+      require("mason-nvim-dap").setup({
+        ensure_installed = { "debugpy","js-debug-adapter" },
+        automatic_installation = true,
+      })
+    end,
+  },
+
+  -- Python DAP helper
+  { "mfussenegger/nvim-dap-python" },
+
+  -- JS/TS/React via vscode-js-debug
+  {
+    "mxsdev/nvim-dap-vscode-js",
+    dependencies = { "mfussenegger/nvim-dap" },
   },
 })
 
--- WSL Clipboard Fix
+-- WSL clipboard
 if vim.fn.has("wsl") == 1 then
   vim.g.clipboard = {
     name = "win32yank-wsl",
@@ -152,21 +190,18 @@ if vim.fn.has("wsl") == 1 then
   }
 end
 
-
--- Paste from system clipboard with \r stripped
-vim.keymap.set("n", "<leader>p", function()
-  local ok, text = pcall(vim.fn.getreg, "+")
-  if ok and type(text) == "string" then
-    vim.fn.setreg("+", text:gsub("\r", ""))
+-- Paste + strip \r
+vim.keymap.set("n","<leader>p",function()
+  local ok,text = pcall(vim.fn.getreg,"+")
+  if ok and type(text)=="string" then
+    vim.fn.setreg("+", text:gsub("\r",""))
     vim.cmd('normal! "+p')
   else
     vim.notify("Clipboard read failed", vim.log.levels.WARN)
   end
-end, { desc = "Paste + register with \\r stripped" })
+end,{ desc = "Paste + (strip \\r)" })
 
--- Editor Options
-vim.o.number = true
-vim.o.relativenumber = true
+-- Editor opts
 vim.o.expandtab = true
 vim.o.shiftwidth = 4
 vim.o.tabstop = 4
@@ -175,91 +210,80 @@ vim.o.ignorecase = true
 vim.o.clipboard = "unnamedplus"
 vim.o.cursorline = true
 vim.o.colorcolumn = "80"
-
-vim.cmd [[
+vim.cmd([[
   highlight ColorColumn ctermbg=234 guibg=#2e3436
   highlight CursorLine cterm=NONE ctermbg=236 guibg=#444444
-]]
+]])
 
--- Tab settings by filetype
-local function set_tab_width(filetype, shiftwidth, tabstop, softtabstop)
-  vim.api.nvim_create_autocmd("FileType", {
-    pattern = filetype,
+-- Tabs by filetype
+local function set_tab_width(ft,s,t,st)
+  vim.api.nvim_create_autocmd("FileType",{
+    pattern = ft,
     callback = function()
-      vim.bo.shiftwidth = shiftwidth
-      vim.bo.tabstop = tabstop
-      vim.bo.softtabstop = softtabstop
+      vim.bo.shiftwidth = s
+      vim.bo.tabstop = t
+      vim.bo.softtabstop = st
     end
   })
 end
-
-set_tab_width("javascript", 2, 2, 2)
-set_tab_width("javascriptreact", 2, 2, 2)
-set_tab_width("typescript", 2, 2, 2)
-set_tab_width("typescriptreact", 2, 2, 2)
-set_tab_width("python", 4, 4, 4)
+set_tab_width("javascript",2,2,2)
+set_tab_width("javascriptreact",2,2,2)
+set_tab_width("typescript",2,2,2)
+set_tab_width("typescriptreact",2,2,2)
+set_tab_width("python",4,4,4)
 
 -- Keymaps
 local map = vim.api.nvim_set_keymap
 local opts = { noremap = true, silent = true }
+map('n','<leader>w',':w<CR>',opts)
+map('n','<leader>q',':q<CR>',opts)
+map('n','<leader>Q',':qa<CR>',opts)
+map('n','<leader>h','<C-w>h',opts)
+map('n','<leader>j','<C-w>j',opts)
+map('n','<leader>k','<C-w>k',opts)
+map('n','<leader>l','<C-w>l',opts)
+map('n','<leader>v',':vs<CR>',opts)
+map('n','<leader>s',':sp<CR>',opts)
+map('i','jk','<ESC>',opts)
+vim.keymap.set("n","<leader>r",function()
+  vim.cmd("%delete _"); vim.cmd("normal! ggP")
+end,{ desc = "Replace file with + register" })
+map('n','<leader>ts',':sp<CR>:term<CR>A',opts)
+map('n','<leader>tv',':vs<CR>:term<CR>A',opts)
+map('n','<Leader>cd','<cmd>Lspsaga show_line_diagnostics<CR>',opts)
+map('n','[e','<cmd>Lspsaga diagnostic_jump_prev<CR>',opts)
+map('n',']e','<cmd>Lspsaga diagnostic_jump_next<CR>',opts)
+map('n','K','<cmd>lua vim.lsp.buf.hover()<CR>',opts)
+map('n','<Leader>ff','<cmd>Telescope find_files<CR>',opts)
+map('n','<Leader>fg','<cmd>Telescope live_grep<CR>',opts)
+map('n','<Leader>fs','<cmd>Telescope grep_string<CR>',opts)
+map('n','<Leader>fq','<cmd>Telescope quickfix<CR>',opts)
+map('n','<Leader>fr','<cmd>Telescope resume<CR>',opts)
+map('n','<Leader>fb','<cmd>Telescope buffers<CR>',opts)
+map('n','<Leader>fh','<cmd>Telescope help_tags<CR>',opts)
+map('n','<Leader>dd','<cmd>Telescope diagnostics<CR>',opts)
+vim.keymap.set('n','<Leader>gw',function()
+  vim.fn.feedkeys(':GptWrap ','n')
+end,{ desc = 'Prompt :GptWrap' })
 
-map('n', '<leader>w', ':w<CR>', opts)
-map('n', '<leader>q', ':q<CR>', opts)
-map('n', '<leader>Q', ':qa<CR>', opts)
-map('n', '<leader>h', '<C-w>h', opts)
-map('n', '<leader>j', '<C-w>j', opts)
-map('n', '<leader>k', '<C-w>k', opts)
-map('n', '<leader>l', '<C-w>l', opts)
-map('n', '<leader>v', ':vs<CR>', opts)
-map('n', '<leader>s', ':sp<CR>', opts)
-map('i', 'jk', '<ESC>', opts)
-vim.keymap.set("n", "<leader>r", function()
-  vim.cmd("%delete _")        -- delete all lines, avoid polluting registers
-  vim.cmd("normal! ggP")   -- paste from + (system clipboard) at top
-end, { desc = "Replace file with + register" })
-map('n', '<leader>ts', ':sp<CR>:term<CR>A', opts)
-map('n', '<leader>tv', ':vs<CR>:term<CR>A', opts)
-
-map('n', '<Leader>cd', '<cmd>Lspsaga show_line_diagnostics<CR>', opts)
-map('n', '[e', '<cmd>Lspsaga diagnostic_jump_prev<CR>', opts)
-map('n', ']e', '<cmd>Lspsaga diagnostic_jump_next<CR>', opts)
-map('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-
-map('n', '<Leader>mp', ':MarkdownPreview<CR>', opts)
-map('n', '<Leader>ms', ':MarkdownPreviewStop<CR>', opts)
-
-map('n', '<Leader>ff', '<cmd>Telescope find_files<CR>', opts)
-map('n', '<Leader>fg', '<cmd>Telescope live_grep<CR>', opts)
-map('n', '<Leader>fb', '<cmd>Telescope buffers<CR>', opts)
-map('n', '<Leader>fh', '<cmd>Telescope help_tags<CR>', opts)
-map('n', '<Leader>dd', '<cmd>Telescope diagnostics<CR>', opts)
-
-vim.keymap.set('n', '<Leader>gw', function()
-  vim.fn.feedkeys(':GptWrap ', 'n')
-end, { desc = 'Prompt :GptWrap' })
-
--- Diagnostic float on hover
-vim.cmd [[
-  autocmd CursorHold * lua vim.diagnostic.open_float(nil, { focusable = false })
-]]
+-- Diagnostic float
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    vim.diagnostic.open_float(nil,{ focusable=false })
+  end,
+})
 
 -- Diagnostic config
 vim.diagnostic.config({
-  virtual_text = { prefix = '●', source = 'always' },
-  signs = true,
-  underline = true,
-  update_in_insert = false,
+  virtual_text = { prefix = '', source = 'always' },
+  signs = true, underline = true, update_in_insert = false,
   severity_sort = true,
 })
 
 -- nvim-cmp
-local cmp = require'cmp'
+local cmp = require("cmp")
 cmp.setup({
-  snippet = {
-    expand = function(args)
-      vim.fn["vsnip#anonymous"](args.body)
-    end,
-  },
+  snippet = { expand = function(a) vim.fn["vsnip#anonymous"](a.body) end },
   mapping = {
     ['<C-d>'] = cmp.mapping.scroll_docs(-4),
     ['<C-f>'] = cmp.mapping.scroll_docs(4),
@@ -267,87 +291,179 @@ cmp.setup({
     ['<C-e>'] = cmp.mapping.close(),
     ['<CR>'] = cmp.mapping.confirm({ select = true }),
   },
-  sources = {
-    { name = 'nvim_lsp' },
-    { name = 'vsnip' },
-  }
+  sources = { { name = 'nvim_lsp' }, { name = 'vsnip' } }
 })
 
-
-
--- lspconfig
-local lspconfig = require('lspconfig')
+-- LSP (Neovim 0.11+ API)
 local capabilities = require('cmp_nvim_lsp').default_capabilities()
-lspconfig.pyright.setup { capabilities = capabilities }
+local function roots()
+  return vim.fs.root(0, {
+    "pyproject.toml","setup.py","package.json",".git"
+  })
+end
+vim.lsp.config("pyright", { capabilities = capabilities, root_dir = roots })
+vim.lsp.config("ts_ls",   { capabilities = capabilities, root_dir = roots })
+vim.lsp.config("html",    { capabilities = capabilities, root_dir = roots })
+vim.lsp.config("cssls",   { capabilities = capabilities, root_dir = roots })
+vim.lsp.config("jsonls",  { capabilities = capabilities, root_dir = roots })
+vim.lsp.enable("pyright")
+vim.lsp.enable("ts_ls")
+vim.lsp.enable("html")
+vim.lsp.enable("cssls")
+vim.lsp.enable("jsonls")
 
--- Disable Perl provider
+-- Providers
 vim.g.loaded_perl_provider = 0
 
--- Diff colors (Tango)
-vim.cmd [[
-  highlight DiffAdd    ctermbg=28 guibg=#346604
+-- Diff colors
+vim.cmd([[
+  highlight DiffAdd ctermbg=28 guibg=#346604
   highlight DiffChange ctermbg=39 guibg=#204a87
   highlight DiffDelete ctermbg=52 guibg=#a40000
-  highlight DiffText   ctermbg=58 guibg=#5c3566
-]]
+  highlight DiffText ctermbg=58 guibg=#5c3566
+]])
 
--- -- Which-Key descriptions
--- local wk = require("which-key")
--- wk.register({
---   { "<leader>cc", desc = "Copilot Chat toggle" },
---   { "<leader>ce", desc = "Copilot Chat explain code" },
---   { "<leader>dd", desc = "Diagnostics" },
---   { "<leader>fb", desc = "Buffers" },
---   { "<leader>ff", desc = "Find files" },
---   { "<leader>fg", desc = "Live grep" },
---   { "<leader>fh", desc = "Help tags" },
---   { "<leader>h", desc = "Window left" },
---   { "<leader>j", desc = "Window down" },
---   { "<leader>k", desc = "Window up" },
---   { "<leader>l", desc = "Window right" },
---   { "<leader>mp", desc = "Markdown preview start" },
---   { "<leader>ms", desc = "Markdown preview stop" },
---   { "<leader>mt", desc = "Markview toggle" },
---   { "<leader>p", desc = "Paste from + (strip \\r)" },
---   { "<leader>q", desc = "Quit" },
---   { "<leader>r", desc = "Run python file" },
---   { "<leader>s", desc = "Horizontal split" },
---   { "<leader>ts", desc = "Terminal horizontal split" },
---   { "<leader>tv", desc = "Terminal vertical split" },
---   { "<leader>v", desc = "Vertical split" },
---   { "<leader>w", desc = "Save file" },
--- })
+-- Terminal esc
+vim.keymap.set('t','jk','<C-\\><C-n>',{ noremap = true })
 
-vim.keymap.set('t', 'jk', '<C-\\><C-n>', { noremap = true })
-
+-- Python host
 vim.g.python3_host_prog = vim.fn.expand("~/.venvs/nvim/bin/python")
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "octo", "octo_issue", "octo_pr" },
+-- Octo tweak
+vim.api.nvim_create_autocmd("FileType",{
+  pattern = { "octo","octo_issue","octo_pr" },
   callback = function()
-    local opts = { buffer = true, noremap = true, silent = true }
-    vim.keymap.set("n", "e", "<cmd>OctoEdit<CR>", opts)
+    local b = { buffer = true, noremap = true, silent = true }
+    vim.keymap.set("n","e","<cmd>OctoEdit<CR>",b)
   end,
 })
 
-vim.api.nvim_create_user_command("GptWrap", function(opts)
-  local args = opts.fargs
-  if #args == 0 then
-    args = { vim.fn.expand("%:p") }
-  end
-  vim.fn.jobstart(vim.list_extend({ "gptwrap" }, args), { detach = true })
-end, {
-  nargs = "*",
-  complete = "file",
-  desc = "Wrap file(s) in triple backticks and open ChatGPT"
+-- GptWrap
+vim.api.nvim_create_user_command("GptWrap",function(o)
+  local a = o.fargs; if #a==0 then a={vim.fn.expand("%:p")} end
+  vim.fn.jobstart(vim.list_extend({ "gptwrap" }, a), { detach = true })
+end,{ nargs="*", complete="file",
+     desc="Wrap file(s) and open ChatGPT" })
+
+-- CopilotChat maps
+vim.keymap.set("n","<leader>cc",":CopilotChatToggle<CR>",
+  { desc="Toggle Copilot Chat" })
+vim.keymap.set("v","<leader>ce",":CopilotChatExplain<CR>",
+  { desc="Explain selection" })
+vim.keymap.set("v","<leader>cf",":CopilotChatFix<CR>",
+  { desc="Fix selection" })
+vim.keymap.set("v","<leader>ct",":CopilotChatTests<CR>",
+  { desc="Generate tests" })
+
+vim.keymap.set("n","<leader>e",":Vex<CR>",{ desc="Vertical Explorer" })
+vim.keymap.set('n','<CR>','o<Esc>k',{ noremap=true, silent=true })
+vim.keymap.set('n','<leader><CR>','O<Esc>j',
+  { noremap=true, silent=true })
+
+-- Quickfix
+vim.api.nvim_create_autocmd("FileType",{
+  pattern="qf",
+  callback=function(a)
+    local b={ buffer=a.buf, noremap=true, silent=true }
+    vim.keymap.set("n","<CR>","<CR>",b)
+  end,
+})
+vim.keymap.set("n","<leader>n",":cnext<CR>",
+  { noremap=true, silent=true })
+vim.keymap.set("n","<leader>p",":cprev<CR>",
+  { noremap=true, silent=true })
+vim.keymap.set("n","<leader>co",":copen<CR>",
+  { noremap=true, silent=true })
+
+-- ================
+-- DAP configuration
+-- ================
+local dap = require("dap")
+local dapui = require("dapui")
+require("nvim-dap-virtual-text").setup()
+dapui.setup({
+  layouts = {
+    { elements = { "scopes","breakpoints","stacks" },
+      size = 40, position="left" },
+    { elements = { "repl","console" },
+      size = 10, position="bottom" },
+  },
+})
+dap.listeners.after.event_initialized["dapui"] = function() dapui.open() end
+dap.listeners.before.event_terminated["dapui"] =
+  function() dapui.close() end
+dap.listeners.before.event_exited["dapui"] =
+  function() dapui.close() end
+
+-- DAP keymaps
+local dm = { noremap = true, silent = true }
+vim.keymap.set("n","<F5>",function() dap.continue() end,dm)
+vim.keymap.set("n","<F10>",function() dap.step_over() end,dm)
+vim.keymap.set("n","<F11>",function() dap.step_into() end,dm)
+vim.keymap.set("n","<F12>",function() dap.step_out() end,dm)
+vim.keymap.set("n","<leader>db",function() dap.toggle_breakpoint() end,dm)
+vim.keymap.set("n","<leader>dB",function()
+  dap.set_breakpoint(vim.fn.input("Breakpoint cond: "))
+end,dm)
+vim.keymap.set("n","<leader>dr",function() dap.repl.toggle() end,dm)
+vim.keymap.set("n","<leader>du",function() dapui.toggle() end,dm)
+vim.keymap.set("n","<leader>dl",function() dap.run_last() end,dm)
+
+-- Python DAP (debugpy via Mason)
+local ok_py, dappy = pcall(require,"dap-python")
+if ok_py then
+  local mason = vim.fn.stdpath("data")..
+    "/mason/packages/debugpy/venv/bin/python"
+  dappy.setup(mason)
+end
+
+-- Python attach preset (debugpy 5678)
+dap.configurations.python = dap.configurations.python or {}
+table.insert(dap.configurations.python, {
+  type = "python",
+  request = "attach",
+  name = "Attach (debugpy 5678)",
+  connect = { host = "127.0.0.1", port = 5678 },
+  justMyCode = false,
 })
 
-vim.keymap.set("n", "<leader>cc", ":CopilotChatToggle<CR>", { desc = "Toggle Copilot Chat" })
-vim.keymap.set("v", "<leader>ce", ":CopilotChatExplain<CR>", { desc = "Explain selection" })
-vim.keymap.set("v", "<leader>cf", ":CopilotChatFix<CR>", { desc = "Fix selection" })
-vim.keymap.set("v", "<leader>ct", ":CopilotChatTests<CR>", { desc = "Generate tests" })
-
-vim.keymap.set("n", "<leader>e", ":Vex<CR>", { desc = "Vertical Explorer" })
-vim.keymap.set('n', '<CR>', 'o<Esc>k', { noremap = true, silent = true })     -- line below
-vim.keymap.set('n', '<leader><CR>', 'O<Esc>j', { noremap = true, silent = true })   -- line above
-
+-- JS/TS/React: vscode-js-debug via Mason
+local ok_js, js = pcall(require,"dap-vscode-js")
+if ok_js then
+  local js_path = vim.fn.stdpath("data").."/mason/packages/js-debug-adapter"
+  js.setup({
+    node_path = "node",
+    debugger_path = js_path,
+    adapters = { "pwa-node","pwa-chrome","pwa-firefox","node-terminal" },
+  })
+  for _,lang in ipairs({
+    "typescript","javascript","typescriptreact","javascriptreact"
+  }) do
+    dap.configurations[lang] = {
+      {
+        type = "pwa-node",
+        request = "attach",
+        name = "Attach (node)",
+        processId = require("dap.utils").pick_process,
+        cwd = "${workspaceFolder}",
+      },
+      {
+        type = "pwa-chrome",
+        request = "launch",
+        name = "Chrome Vite (5173)",
+        url = "http://localhost:5173",
+        webRoot = "${workspaceFolder}",
+      },
+      {
+        type = "pwa-node",
+        request = "launch",
+        name = "Node file",
+        program = "${file}",
+        cwd = "${workspaceFolder}",
+        runtimeExecutable = "node",
+        sourceMaps = true,
+        skipFiles = { "<node_internals>/**" },
+      },
+    }
+  end
+end
