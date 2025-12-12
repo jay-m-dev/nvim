@@ -4,6 +4,8 @@
 -- Leader and colors
 vim.g.mapleader = ' '
 vim.o.termguicolors = true
+-- vim.o.smartindent
+vim.o.cindent = true
 
 -- lazy.nvim bootstrap
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
